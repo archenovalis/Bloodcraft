@@ -396,9 +396,8 @@ internal static class LevelingSystem
     static float ApplyScalingFactor(float gainedXP, int currentLevel, int victimLevel)
     {
         float k = ConfigService.LevelScalingMultiplier;
-        int levelDifference = currentLevel - victimLevel;
-        if (k <= 0) return gainedXP;
-        float scalingFactor = levelDifference > 0 ? MathF.Exp(-k * levelDifference) : 1.0f;
+        int levelDifference = victimLevel - currentLevel ;
+        float scalingFactor = MathF.Min(2, MathF.Exp(k * levelDifference));
         return gainedXP * scalingFactor;
     }
     public static bool TryParseClassName(string className, out PlayerClasses parsedClassType)
