@@ -16,7 +16,7 @@ using UnityEngine;
 namespace Bloodcraft;
 internal static class Core
 {
-    static World Server { get; } = GetServerWorld() ?? throw new Exception("There is no Server world (yet)...");
+    static World Server { get; } = GetServerWorld(); // ?? throw new Exception("There is no Server world (yet)...");
     public static EntityManager EntityManager => Server.EntityManager;
     public static ServerGameManager ServerGameManager => SystemService.ServerScriptMapper.GetServerGameManager();
     public static SystemService SystemService { get; } = new(Server);

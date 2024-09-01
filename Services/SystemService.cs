@@ -10,7 +10,7 @@ namespace Bloodcraft.Services;
 public class SystemService(World world)
 {
     // Server world reference
-    readonly World _world = world ?? throw new ArgumentNullException(nameof(world));
+    readonly World _world = world; // ?? throw new ArgumentNullException(nameof(world));
 
     // System backing fields with lazy initialization
     DebugEventsSystem _debugEventsSystem;
