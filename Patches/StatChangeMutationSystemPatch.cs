@@ -39,28 +39,18 @@ internal static class StatChangeMutationSystemPatch
                     IBloodHandler bloodHandler = BloodHandlerFactory.GetBloodHandler(bloodType);
                     if (bloodHandler == null) continue;
 
-                    float quality = bloodHandler.GetLegacyData(steamID).Value;
-
-                    if (ConfigService.PrestigeSystem && steamID.TryGetPlayerPrestiges(out var prestiges) && prestiges.TryGetValue(BloodSystem.BloodTypeToPrestigeMap[bloodType], out var bloodPrestige))
+                    if (ConfigService.PrestigeSystem && steamID.TryGetPlayerPrestiges(out var prestiges)
+                        && prestiges.TryGetValue(BloodSystem.BloodTypeToPrestigeMap[bloodType], out var bloodPrestige)
+                        && bloodPrestige > 0)
                     {
-                        float qualityPercentBonus = ConfigService.PrestigeBloodQuality > 1f ? ConfigService.PrestigeBloodQuality : ConfigService.PrestigeBloodQuality * 100f;
-
-                        quality = (float)bloodPrestige * qualityPercentBonus;
-                        if (quality > 0)
-                        {
-                            bloodQualityChange.Quality += quality;
-                            bloodQualityChange.ForceReapplyBuff = true;
-                            entity.Write(bloodQualityChange);
-                        }
-                    }
-                    else if (!ConfigService.PrestigeSystem)
-                    {
-                        if (quality > 0)
-                        {
-                            bloodQualityChange.Quality += quality;
-                            bloodQualityChange.ForceReapplyBuff = true;
-                            entity.Write(bloodQualityChange);
-                        }
+                        float qualityPercentBonus = 
+                        ConfigService.PrestigeBloodQuality > 1f 
+                            ? ConfigService.PrestigeBloodQuality 
+                            : ConfigService.PrestigeBloodQuality * 100f;
+                        
+                        bloodQualityChange.Quality += bloodPrestige * qualityPercentBonus;
+                        bloodQualityChange.ForceReapplyBuff = true;
+                        entity.Write(bloodQualityChange);
                     }
 
                     RecentBloodChange[steamID] = true;
