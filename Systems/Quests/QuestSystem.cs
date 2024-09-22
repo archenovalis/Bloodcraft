@@ -68,7 +68,8 @@ internal static class QuestSystem
     public class QuestObjective
     {
         public TargetType Goal { get; set; }
-        public PrefabGUID Target { get; set; }
+        public string Name { get; set; }
+        public int Level { get; set; }
         public int RequiredAmount { get; set; }
         public bool Complete { get; set; }
     }
@@ -220,6 +221,7 @@ internal static class QuestSystem
     {
         PrefabGUID target = new(0);
         int requiredAmount;
+        int targetLevel = 0;
 
         switch (goal)
         {
@@ -243,6 +245,9 @@ internal static class QuestSystem
                 {
                     requiredAmount = 10;
                 }
+
+                Core.SystemService.PrefabCollectionSystem._PrefabGuidToEntityMap.TryGetValue(target, out Entity targetEntity);
+                targetLevel = targetEntity.Read<UnitLevel>().Level._Value;
 
                 break;
             case TargetType.Craft:
@@ -275,7 +280,7 @@ internal static class QuestSystem
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        return new QuestObjective { Goal = goal, Target = target, RequiredAmount = requiredAmount };
+        return new QuestObjective { Goal = goal, Name = target.GetPrefabName(), Level = targetLevel, RequiredAmount = requiredAmount };
     }
     static HashSet<PrefabGUID> GetGoalPrefabsForLevel(TargetType goal, int level)
     {
@@ -467,7 +472,14 @@ internal static class QuestSystem
         for (int i = 0; i < questData.Count; i++)
         {
             var quest = questData.ElementAt(i);
-            if (quest.Value.Objective.Target == target)
+
+            int targetLevel = 0;
+            Core.SystemService.PrefabCollectionSystem._PrefabGuidToEntityMap.TryGetValue(target, out Entity targetEntity);
+            if (targetEntity.TryGetComponent(out UnitLevel targetUnitLevel))
+            {
+                targetLevel = targetUnitLevel.Level._Value;
+            }
+            if (quest.Value.Objective.Name == target.GetPrefabName() && quest.Value.Objective.Level <= targetLevel)
             {
                 updated = true;
                 string colorType = quest.Key == QuestType.Daily ? $"<color=#00FFFF>{QuestType.Daily} Quest</color>" : $"<color=#BF40BF>{QuestType.Weekly} Quest</color>";
@@ -511,7 +523,7 @@ internal static class QuestSystem
 
                         if (quest.Key == QuestType.Weekly) quantity *= QuestMultipliers[quest.Key];
 
-                        if (quest.Value.Objective.Target.LookupName().ToLower().Contains("vblood")) quantity *= 3;
+                        if (quest.Value.Objective.Name.ToLower().Contains("vblood")) quantity *= 3;
 
                         if (ServerGameManager.TryAddInventoryItem(user.LocalCharacter._Entity, reward, quantity))
                         {
@@ -544,7 +556,7 @@ internal static class QuestSystem
                         HashSet<PrefabGUID> targets = GetGoalPrefabsForLevel(goal, level);
                         questData[QuestType.Daily] = (GenerateQuestObjective(goal, targets, level, QuestType.Daily), 0, DateTime.UtcNow);
                         var dailyQuest = questData[QuestType.Daily];
-                        LocalizationService.HandleServerReply(EntityManager, user, $"New <color=#00FFFF>Daily Quest</color> available: <color=green>{dailyQuest.Objective.Goal}</color> <color=white>{dailyQuest.Objective.Target.GetPrefabName()}</color>x<color=#FFC0CB>{dailyQuest.Objective.RequiredAmount}</color> [<color=white>{dailyQuest.Progress}</color>/<color=yellow>{dailyQuest.Objective.RequiredAmount}</color>]");
+                        LocalizationService.HandleServerReply(EntityManager, user, $"New <color=#00FFFF>Daily Quest</color> available: <color=green>{dailyQuest.Objective.Goal}</color> <color=white>{dailyQuest.Objective.Name}</color>x<color=#FFC0CB>{dailyQuest.Objective.RequiredAmount}</color> [<color=white>{dailyQuest.Progress}</color>/<color=yellow>{dailyQuest.Objective.RequiredAmount}</color>]");
                     }
                 }
             }
@@ -568,7 +580,7 @@ internal static class QuestSystem
         if (PlayerUtilities.GetPlayerBool(steamId, "QuestLogging") && !quest.Value.Objective.Complete)
         {
             string message = $"Progress added to {colorType}: <color=green>{quest.Value.Objective.Goal}</color> " +
-                             $"<color=white>{quest.Value.Objective.Target.GetPrefabName()}</color> " +
+                             $"<color=white>{quest.Value.Objective.Name}</color> " +
                              $"[<color=white>{questData[quest.Key].Progress}</color>/<color=yellow>{quest.Value.Objective.RequiredAmount}</color>]";
 
             LocalizationService.HandleServerReply(EntityManager, user, message);

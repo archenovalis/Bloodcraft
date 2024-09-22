@@ -59,8 +59,8 @@ internal static class QuestCommands
                                                 untilReset.Minutes,
                                                 untilReset.Seconds);
 
-                LocalizationService.HandleReply(ctx, $"<color=#00FFFF>Daily Quest</color>: <color=green>{dailyQuest.Objective.Goal}</color> <color=white>{dailyQuest.Objective.Target.GetPrefabName()}</color>x<color=#FFC0CB>{dailyQuest.Objective.RequiredAmount}</color> [<color=white>{dailyQuest.Progress}</color>/<color=yellow>{dailyQuest.Objective.RequiredAmount}</color>]");
-                LocalizationService.HandleReply(ctx, $"Time until daily reset: <color=yellow>{timeLeft}</color> | Character Prefab: <color=white>{dailyQuest.Objective.Target.LookupName()}</color>");
+                LocalizationService.HandleReply(ctx, $"<color=#00FFFF>Daily Quest</color>: <color=green>{dailyQuest.Objective.Goal}</color> <color=white>{dailyQuest.Objective.Name}</color>x<color=#FFC0CB>{dailyQuest.Objective.RequiredAmount}</color> [<color=white>{dailyQuest.Progress}</color>/<color=yellow>{dailyQuest.Objective.RequiredAmount}</color>]");
+                LocalizationService.HandleReply(ctx, $"Time until daily reset: <color=yellow>{timeLeft}</color> | Character Prefab: <color=white>{dailyQuest.Objective.Name}</color>");
             }
             else if (dailyQuest.Objective.Complete)
             {
@@ -103,8 +103,8 @@ internal static class QuestCommands
                                                 untilReset.Minutes,
                                                 untilReset.Seconds);
 
-                LocalizationService.HandleReply(ctx, $"<color=#BF40BF>Weekly Quest</color>: <color=green>{weeklyQuest.Objective.Goal}</color> <color=white>{weeklyQuest.Objective.Target.GetPrefabName()}</color>x<color=#FFC0CB>{weeklyQuest.Objective.RequiredAmount}</color> [<color=white>{weeklyQuest.Progress}</color>/<color=yellow>{weeklyQuest.Objective.RequiredAmount}</color>]");
-                LocalizationService.HandleReply(ctx, $"Time until weekly reset: <color=yellow>{timeLeft}</color> | Character Prefab: <color=white>{weeklyQuest.Objective.Target.LookupName()}</color>");
+                LocalizationService.HandleReply(ctx, $"<color=#BF40BF>Weekly Quest</color>: <color=green>{weeklyQuest.Objective.Goal}</color> <color=white>{weeklyQuest.Objective.Name}</color>x<color=#FFC0CB>{weeklyQuest.Objective.RequiredAmount}</color> [<color=white>{weeklyQuest.Progress}</color>/<color=yellow>{weeklyQuest.Objective.RequiredAmount}</color>]");
+                LocalizationService.HandleReply(ctx, $"Time until weekly reset: <color=yellow>{timeLeft}</color> | Character Prefab: <color=white>{weeklyQuest.Objective.Name}</color>");
             }
             else if (weeklyQuest.Objective.Complete)
             {
@@ -136,7 +136,9 @@ internal static class QuestCommands
     [Command(name: "track", shortHand: "t", adminOnly: false, usage: ".quest t [QuestType]", description: "Locate and track quest target, rerolls quest if none found.")]
     public static void LocateTargetCommand(ChatCommandContext ctx, string questType)
     {
-        if (!ConfigService.QuestSystem)
+        LocalizationService.HandleReply(ctx, "No cheating. Go find it yourself.");
+        return;
+/*         if (!ConfigService.QuestSystem)
         {
             LocalizationService.HandleReply(ctx, "Quests are not enabled.");
             return;
@@ -207,7 +209,7 @@ internal static class QuestCommands
                     float3 direction = math.normalize(targetPosition - userPosition);
                     string cardinalDirection = $"<color=white>{GetCardinalDirection(direction)}</color>";
                     double seconds = (DateTime.UtcNow - QuestService.LastUpdate).TotalSeconds;
-                    LocalizationService.HandleReply(ctx, $"Nearest <color=white>{dailyQuest.Objective.Target.GetPrefabName()}</color> was <color=#00FFFF>{(int)distance}</color>f away to the <color=yellow>{cardinalDirection}</color> <color=#F88380>{(int)seconds}</color>s ago.");
+                    LocalizationService.HandleReply(ctx, $"Nearest <color=white>{dailyQuest.Objective.Name}</color> was <color=#00FFFF>{(int)distance}</color>f away to the <color=yellow>{cardinalDirection}</color> <color=#F88380>{(int)seconds}</color>s ago.");
                 }
                 else if (entities.Count == 0)
                 {
@@ -250,7 +252,7 @@ internal static class QuestCommands
                     float3 direction = math.normalize(targetPosition - userPosition);
                     string cardinalDirection = $"<color=white>{GetCardinalDirection(direction)}</color>";
                     double seconds = (DateTime.UtcNow - QuestService.LastUpdate).TotalSeconds;
-                    LocalizationService.HandleReply(ctx, $"Nearest <color=white>{weeklyQuest.Objective.Target.GetPrefabName()}</color> was <color=#00FFFF>{(int)distance}</color>f away to the <color=yellow>{cardinalDirection}</color> <color=#F88380>{(int)seconds}</color>s ago.");
+                    LocalizationService.HandleReply(ctx, $"Nearest <color=white>{weeklyQuest.Objective.Name}</color> was <color=#00FFFF>{(int)distance}</color>f away to the <color=yellow>{cardinalDirection}</color> <color=#F88380>{(int)seconds}</color>s ago.");
                 }
                 else if (entities.Count == 0)
                 {
@@ -265,7 +267,7 @@ internal static class QuestCommands
         else
         {
             LocalizationService.HandleReply(ctx, "You don't have any quests yet, check back soon.");
-        }
+        } */
     }
 
     [Command(name: "refresh", shortHand: "rf", adminOnly: true, usage: ".quest rf [Name]", description: "Refreshes daily and weekly quests for player.")]
