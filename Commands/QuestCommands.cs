@@ -136,9 +136,9 @@ internal static class QuestCommands
     [Command(name: "track", shortHand: "t", adminOnly: false, usage: ".quest t [QuestType]", description: "Locate and track quest target, rerolls quest if none found.")]
     public static void LocateTargetCommand(ChatCommandContext ctx, string questType)
     {
-        LocalizationService.HandleReply(ctx, "No cheating. Go find it yourself.");
-        return;
-/*         if (!ConfigService.QuestSystem)
+        //LocalizationService.HandleReply(ctx, "No cheating. Go find it yourself.");
+        //return;
+        if (!ConfigService.QuestSystem)
         {
             LocalizationService.HandleReply(ctx, "Quests are not enabled.");
             return;
@@ -175,7 +175,7 @@ internal static class QuestCommands
         {
             if (type.Equals(QuestType.Daily) && questData.TryGetValue(QuestType.Daily, out var dailyQuest) && dailyQuest.Objective.Goal.Equals(TargetType.Kill) && !dailyQuest.Objective.Complete)
             {
-                if (!QuestService.TargetCache.TryGetValue(dailyQuest.Objective.Target, out HashSet<Entity> entities)) // if no valid targest refresh quest
+                if (!QuestService.TargetCache.TryGetValue(dailyQuest.Objective.PrefabGUID, out HashSet<Entity> entities)) // if no valid targest refresh quest
                 {
                     int level = (ConfigService.LevelingSystem && steamId.TryGetPlayerExperience(out var data)) ? data.Key : (int)user.LocalCharacter._Entity.Read<Equipment>().GetFullLevel();
                     ForceDaily(user, steamId, level);
@@ -218,7 +218,7 @@ internal static class QuestCommands
             }
             else if (type.Equals(QuestType.Weekly) && questData.TryGetValue(QuestType.Weekly, out var weeklyQuest) && weeklyQuest.Objective.Goal.Equals(TargetType.Kill) && !weeklyQuest.Objective.Complete)
             {
-                if (!QuestService.TargetCache.TryGetValue(weeklyQuest.Objective.Target, out HashSet<Entity> entities)) // if no valid targets refresh quest
+                if (!QuestService.TargetCache.TryGetValue(weeklyQuest.Objective.PrefabGUID, out HashSet<Entity> entities)) // if no valid targets refresh quest
                 {
                     int level = (ConfigService.LevelingSystem && steamId.TryGetPlayerExperience(out var data)) ? data.Key : (int)user.LocalCharacter._Entity.Read<Equipment>().GetFullLevel();
                     ForceWeekly(user, steamId, level);
@@ -267,7 +267,7 @@ internal static class QuestCommands
         else
         {
             LocalizationService.HandleReply(ctx, "You don't have any quests yet, check back soon.");
-        } */
+        }
     }
 
     [Command(name: "refresh", shortHand: "rf", adminOnly: true, usage: ".quest rf [Name]", description: "Refreshes daily and weekly quests for player.")]

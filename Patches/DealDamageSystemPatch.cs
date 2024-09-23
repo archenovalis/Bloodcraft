@@ -36,7 +36,7 @@ internal static class DealDamageSystemPatch
     static void OnUpdatePrefix(DealDamageSystem __instance)
     {
         if (!Core.hasInitialized) return;
-        if (!ConfigService.ClassSpellSchoolOnHitEffects || !Classes) return;
+        if (!ConfigService.ClassSpellSchoolOnHitEffects && !Classes && !ConfigService.QuestSystem) return;
 
         NativeArray<Entity> entities = __instance._Query.ToEntityArray(Allocator.Temp);
         try
