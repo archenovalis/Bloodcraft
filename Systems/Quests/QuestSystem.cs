@@ -69,6 +69,7 @@ internal static class QuestSystem
     {
         public TargetType Goal { get; set; }
         public string Name { get; set; }
+        public PrefabGUID PrefabGUID { get; set; }
         public int Level { get; set; }
         public int RequiredAmount { get; set; }
         public bool Complete { get; set; }
@@ -280,7 +281,7 @@ internal static class QuestSystem
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        return new QuestObjective { Goal = goal, Name = target.GetPrefabName(), Level = targetLevel, RequiredAmount = requiredAmount };
+        return new QuestObjective { Goal = goal, PrefabGUID = target, Name = target.GetPrefabName(), Level = targetLevel, RequiredAmount = requiredAmount };
     }
     static HashSet<PrefabGUID> GetGoalPrefabsForLevel(TargetType goal, int level)
     {
